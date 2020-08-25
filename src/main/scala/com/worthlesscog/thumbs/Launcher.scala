@@ -10,7 +10,7 @@ import javafx.scene.image.Image
 import javafx.scene.input.{KeyCode, KeyEvent, MouseButton, MouseEvent, ScrollEvent}
 import javafx.scene.layout.{Pane, StackPane, TilePane}
 import javafx.scene.paint.Color
-import javafx.stage.{DirectoryChooser, Screen, Stage}
+import javafx.stage.{DirectoryChooser, Modality, Screen, Stage}
 import javax.imageio.ImageIO
 
 import scala.collection.JavaConverters._
@@ -125,14 +125,35 @@ class Thumbs extends Application {
     def loadTile(w: Int, h: Int)(f: File)(implicit status: Labeled) = {
         val v = cache.get(f.getName, () => cacheImage(f, w, h)) |> defaultImageView
         eventHandler(statusUpdate(f)) |> v.setOnMouseEntered
+        eventHandler(popup(f)) |> v.setOnMouseClicked
         defaultBorderPane(v)
     }
 
     def cacheImage(f: File, w: Int, h: Int) =
         new Image("file:" + f.getPath, w, h, PRESERVE_ASPECT, SMOOTHER_THUMBNAILS, BACKGROUND_LOADING)
 
-    def statusUpdate(file: File)(e: MouseEvent)(implicit status: Labeled) =
-        status.setText(file.getPath)
+    def statusUpdate(f: File)(e: MouseEvent)(implicit status: Labeled) =
+        status.setText(f getPath)
+
+    def popup(f: File)(e: MouseEvent) =
+        if (e |> singleRightClick) {
+            // TODO: scale down to display bounds if required or don't bother?
+            val i = new Image("file:" + f.getPath) |> defaultImageView |> hbox |> defaultScene
+
+            val s = new Stage()
+            eventHandler(closeOnKeyPress(s)) |> i.setOnKeyPressed
+            s.initModality(Modality.APPLICATION_MODAL)
+            s.setResizable(false)
+            s.setScene(i)
+            s.setTitle(f getName)
+            s.show()
+        }
+
+    def singleRightClick(e: MouseEvent) =
+        e.getClickCount == 1 && e.getButton == MouseButton.SECONDARY
+
+    def closeOnKeyPress(s: Stage)(e: KeyEvent) =
+        s.close()
 
     def displayPane(pane: Pane)(implicit stack: StackPane) {
         stack.getChildren.clear()

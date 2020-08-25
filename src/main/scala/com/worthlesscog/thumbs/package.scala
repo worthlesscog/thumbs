@@ -3,7 +3,7 @@ package com.worthlesscog
 import javafx.beans.value.{ChangeListener, ObservableValue}
 import javafx.scene.{Parent, Scene}
 import javafx.scene.control.Label
-import javafx.scene.layout.StackPane
+import javafx.scene.layout.{HBox, StackPane}
 // import javafx.concurrent.Task
 import javafx.event.{Event, EventHandler}
 import javafx.geometry.Insets
@@ -81,6 +81,9 @@ package object thumbs {
 
     def flatFill(colour: Color) =
         new BackgroundFill(colour, CornerRadii.EMPTY, Insets.EMPTY)
+
+    def hbox(n: Node) =
+        new HBox(n)
 
     // def lruCache[K, V](capacity: Int) = new util.LinkedHashMap[K, V](capacity, 0.75f, true) {
     //     override def removeEldestEntry(eldest: util.Map.Entry[K, V]): Boolean = size > capacity
