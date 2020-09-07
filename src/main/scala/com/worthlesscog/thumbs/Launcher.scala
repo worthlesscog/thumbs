@@ -7,7 +7,7 @@ import javafx.application.{Application, Platform}
 import javafx.beans.property.{SimpleIntegerProperty => IntProp, SimpleObjectProperty => ObjProp}
 import javafx.scene.control.Labeled
 import javafx.scene.image.Image
-import javafx.scene.input.{KeyCode, KeyEvent, MouseButton, MouseEvent, ScrollEvent}
+import javafx.scene.input.{InputEvent, KeyCode, KeyEvent, MouseButton, MouseEvent, ScrollEvent}
 import javafx.scene.layout.{Pane, StackPane, TilePane}
 import javafx.scene.paint.Color
 import javafx.stage.{DirectoryChooser, Modality, Screen, Stage}
@@ -141,7 +141,8 @@ class Thumbs extends Application {
             val i = new Image("file:" + f.getPath) |> defaultImageView |> hbox |> defaultScene
 
             val s = new Stage()
-            eventHandler(closeOnKeyPress(s)) |> i.setOnKeyPressed
+            eventHandler(closeOnInput(s)) |> i.setOnKeyPressed
+            eventHandler(closeOnInput(s)) |> i.setOnMouseClicked
             s.initModality(Modality.APPLICATION_MODAL)
             s.setResizable(false)
             s.setScene(i)
@@ -152,7 +153,7 @@ class Thumbs extends Application {
     def singleRightClick(e: MouseEvent) =
         e.getClickCount == 1 && e.getButton == MouseButton.SECONDARY
 
-    def closeOnKeyPress(s: Stage)(e: KeyEvent) =
+    def closeOnInput(s: Stage)(e: InputEvent) =
         s.close()
 
     def displayPane(pane: Pane)(implicit stack: StackPane) {
